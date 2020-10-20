@@ -42,4 +42,10 @@ class CellsWrapper {
   getCellFromField([row, column]: number[]) {
     return this.cellsField[row][column]
   }
+
+  testCells(playerNMove: string, first: number[], second: number[], third: number[]) {
+      return this.getCellFromField(first) == playerNMove && 
+      this.getCellFromField(second) == playerNMove &&
+      this.getCellFromField(third) == playerNMove
+  }
 }
