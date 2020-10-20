@@ -1,4 +1,6 @@
 import { Score } from './score';
+import { Cell } from './cell';
+import { CellsWrapper } from './cells-wrapper';
 const cellClass = 'js-cell'
 const playerXMove = 'x'
 const playerOMove = 'o'
@@ -9,7 +11,7 @@ const getRandomBoolean = () => Math.random() >= .5
 
 export 
 class Game {
-  cells: NodeListOf<Element>
+  cells: CellsWrapper
   isXMove: boolean
   score: Score
   gameRun: boolean
@@ -17,7 +19,7 @@ class Game {
 
   constructor(score: Score) {
     this.score = score;
-    this.cells = document.querySelectorAll(`.${cellClass}`)
+    this.cells = new CellsWrapper(document.querySelectorAll(`.${cellClass}`))
     this.isXMove = getRandomBoolean()
     this.gameRun = true
     this.addOnClickToCells()
@@ -29,36 +31,15 @@ class Game {
   }
 
   private async addOnClickToCells() {
-    this.cells.forEach(cell => {
-      cell.addEventListener('click', () => {
+    this.cells.asArray.forEach(cell => {
+      cell.onClick(() => {
         if(this.gameRun)
-          this.getSign(cell)
-          .then(() => 
+          cell.getSign(this.isXMove, playerXMove, playerOMove).then(boolean => {
+            this.isXMove = boolean
             this.checkWinStatus()
-          )
+          })
       })
     })
-  }
-
-  private async getSign(cell: Element) {
-    if(cell.innerHTML == ''){
-      cell.innerHTML = this.isXMove ? playerXMove : playerOMove
-      this.isXMove = !this.isXMove
-    }
-  }
-
-  get cellsFieldValues() {
-    return [
-      [
-        this.cells[0].innerHTML, this.cells[1].innerHTML, this.cells[2].innerHTML
-      ],
-      [
-        this.cells[3].innerHTML, this.cells[4].innerHTML, this.cells[5].innerHTML
-      ],
-      [
-        this.cells[6].innerHTML, this.cells[7].innerHTML, this.cells[8].innerHTML
-      ]
-    ]
   }
 
   private async checkWinStatus() {
@@ -66,21 +47,21 @@ class Game {
     await this.checkWinStatusHelp(playerOMove)
   }
 
-  private async testCellsGenerator(cfv: string[][], playerNMove: playerNMove, generatorArray: number[][][]) {
+  private async testCellsGenerator(playerNMove: playerNMove, generatorArray: number[][][]) {
     let whoWin = ''
     generatorArray.forEach(async value => {
-      whoWin = await this.testCells(cfv, playerNMove, value)
+      whoWin = await this.testCells(playerNMove, value)
     })
     return whoWin
   }
 
-  private async testCells(cfv: string[][], playerNMove: playerNMove, [first, second, third]: number[][]) {
+  private async testCells(playerNMove: playerNMove, [first, second, third]: number[][]) {
     if(
-      this.getFrom2D(cfv, first) == playerNMove &&   // xoo
-      this.getFrom2D(cfv, second) == playerNMove &&   // xoo
-      this.getFrom2D(cfv, third) == playerNMove      // xoo
+      this.cells.getCellFromField(first) == playerNMove && 
+      this.cells.getCellFromField(second) == playerNMove &&
+      this.cells.getCellFromField(third) == playerNMove    
     ) {
-      this.colorize(first, second, third)
+      this.cells.paintCell(first, second, third)
       this.gameRun = false
       this.score.addScoreAndInsert(playerNMove == playerXMove ? 'x' : 'o')
       return playerNMove
@@ -88,12 +69,8 @@ class Game {
     return ''
   }
 
-  private getFrom2D(arr: string[][], [row, column]: number[]) {
-    return arr[row][column]
-  }
-
   private async checkWinStatusHelp(playerNMove: playerNMove) {
-    return this.testCellsGenerator(this.cellsFieldValues, playerNMove, [
+    return this.testCellsGenerator(playerNMove, [
       [[0, 0], [1, 0], [2, 0]],
       [[0, 1], [1, 1], [2, 1]],
       [[0, 2], [1, 2], [2, 2]],
@@ -105,10 +82,6 @@ class Game {
     ])
   }
 
-  private async colorize(... winPlaces: number[][]) {
-    winPlaces.forEach(([row, column]) => {
-      this.cells[row*3 + column].classList.add('win-cell')
-    })
-  }
+  
 }
 
