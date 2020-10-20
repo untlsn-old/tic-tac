@@ -5,12 +5,6 @@ const playerOMove = 'o'
 
 type playerNMove = typeof playerXMove | typeof playerOMove
 
-type winRoad = [
-  [number, number],
-  [number, number],
-  [number, number]
-]
-
 const getRandomBoolean = () => Math.random() >= .5
 
 export 
@@ -42,12 +36,6 @@ class Game {
           .then(() => 
             this.checkWinStatus()
           )
-          .then(value => {
-            if(value) {
-              this.score.addScoreAndInsert(value == playerXMove ? 'x' : 'o')
-              this.gameRun = false
-            }
-          })
       })
     })
   }
@@ -78,75 +66,46 @@ class Game {
     await this.checkWinStatusHelp(playerOMove)
   }
 
-  private async checkWinStatusHelp(playerNMove: playerNMove): Promise<playerNMove> {
-    const cfv = this.cellsFieldValues
-    if(
-      cfv[0][0] == playerNMove &&   // xoo
-      cfv[1][0] == playerNMove &&   // xoo
-      cfv[2][0] == playerNMove      // xoo
-    ) {
-      this.colorize([0, 0], [1, 0], [2, 0])
-      return playerNMove
-    } 
-    if(
-      cfv[0][1] == playerNMove &&   // oxo
-      cfv[1][1] == playerNMove &&   // oxo
-      cfv[2][1] == playerNMove      // oxo
-    ) {
-      this.colorize([0, 1], [1, 1], [2, 1])
-      return playerNMove
-    }
-    if(
-      cfv[0][2] == playerNMove &&   // oox
-      cfv[1][2] == playerNMove &&   // oox
-      cfv[2][2] == playerNMove      // oox
-    ) {
-      this.colorize([0, 2], [1, 2], [2, 2])
-      return playerNMove
-    }
-    if(
-      cfv[0][0] == playerNMove &&   // xxx
-      cfv[0][1] == playerNMove &&   // ooo
-      cfv[0][2] == playerNMove      // ooo
-    ) {
-      this.colorize([0, 0], [0, 1], [0, 2])
-      return playerNMove
-    }
-    if(
-      cfv[1][0] == playerNMove &&   // ooo
-      cfv[1][1] == playerNMove &&   // xxx
-      cfv[1][2] == playerNMove      // ooo
-    ) {
-      this.colorize([1, 0], [1, 1], [1, 2])
-      return playerNMove
-    }
-    if(
-      cfv[2][0] == playerNMove &&   // ooo
-      cfv[2][1] == playerNMove &&   // ooo
-      cfv[2][2] == playerNMove      // xxx
-    ) {
-      this.colorize([2, 0], [2, 1], [2, 2])
-      return playerNMove
-    }
-    if(
-      cfv[0][0] == playerNMove &&   // xoo
-      cfv[1][1] == playerNMove &&   // oxo
-      cfv[2][2] == playerNMove      // oox
-    ) {
-      this.colorize([0, 0], [1, 1], [2, 2])
-      return playerNMove
-    }
-    if(
-      cfv[0][2] == playerNMove &&   // oox
-      cfv[1][1] == playerNMove &&   // oxo
-      cfv[2][0] == playerNMove      // xoo
-    ) {
-      this.colorize([0, 2], [1, 1], [2, 0])
-      return playerNMove
-    }
+  private async testCellsGenerator(cfv: string[][], playerNMove: playerNMove, generatorArray: number[][][]) {
+    let whoWin = ''
+    generatorArray.forEach(async value => {
+      whoWin = await this.testCells(cfv, playerNMove, value)
+    })
+    return whoWin
   }
 
-  private async colorize(... winPlaces: winRoad) {
+  private async testCells(cfv: string[][], playerNMove: playerNMove, [first, second, third]: number[][]) {
+    if(
+      this.getFrom2D(cfv, first) == playerNMove &&   // xoo
+      this.getFrom2D(cfv, second) == playerNMove &&   // xoo
+      this.getFrom2D(cfv, third) == playerNMove      // xoo
+    ) {
+      this.colorize(first, second, third)
+      this.gameRun = false
+      this.score.addScoreAndInsert(playerNMove == playerXMove ? 'x' : 'o')
+      return playerNMove
+    }
+    return ''
+  }
+
+  private getFrom2D(arr: string[][], [row, column]: number[]) {
+    return arr[row][column]
+  }
+
+  private async checkWinStatusHelp(playerNMove: playerNMove) {
+    return this.testCellsGenerator(this.cellsFieldValues, playerNMove, [
+      [[0, 0], [1, 0], [2, 0]],
+      [[0, 1], [1, 1], [2, 1]],
+      [[0, 2], [1, 2], [2, 2]],
+      [[0, 0], [0, 1], [0, 2]],
+      [[1, 0], [1, 1], [1, 2]],
+      [[2, 0], [2, 1], [2, 2]],
+      [[0, 0], [1, 1], [2, 2]],
+      [[0, 2], [1, 1], [2, 0]]
+    ])
+  }
+
+  private async colorize(... winPlaces: number[][]) {
     winPlaces.forEach(([row, column]) => {
       this.cells[row*3 + column].classList.add('win-cell')
     })
