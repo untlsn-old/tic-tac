@@ -7,10 +7,5 @@
 
   &__cell {
     border: 2px black solid;
-
-    &:hover {
-      transition: 1s;
-      background-color: rgba(20, 71, 0, 0.05);
-    }
   }
 }
