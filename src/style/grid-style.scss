@@ -1,11 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+$borderColor: 10px #000000c0 solid;
+
 .game {
   display: grid;
   grid-template-columns:  repeat(3, 150px);
   grid-template-rows:     repeat(3, 150px);
-  
-  gap: 5px;
 
   &__cell {
-    border: 2px black solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    user-select: none;
+    font-family: Raleway, sans-serif;
+    &:hover {
+      cursor: context-menu;
+    }
+
+    &:nth-child(-n+3) {
+      border-bottom: $borderColor;
+    }
+    &:nth-child(n+7) {
+      border-top: $borderColor;
+    }
+    &:nth-child(3n-2) {
+      border-right: $borderColor;
+    }
+    &:nth-child(3n) {
+      border-left: $borderColor;
+    }
   }
+  
 }

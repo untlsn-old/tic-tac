@@ -21,10 +21,11 @@ class Cell {
   }
 
   async getSign(isXMove: boolean, playerXMove: string, playerOMove: string) {
-    if(this.data == ''){
-      this.data = isXMove ? playerXMove : playerOMove
-      return !isXMove
-    }
-    return isXMove
+    return new Promise(resolve => {
+      if(this.data == ''){
+        this.data = isXMove ? playerXMove : playerOMove
+        resolve()
+      }
+    })
   }
 }

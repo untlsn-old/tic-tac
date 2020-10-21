@@ -1,6 +1,39 @@
+$cellsize: 150px;
+$lineweight: 5px;
+
 .win-cell {
-  background-color: green;
-  &:hover {
-    background-color: green;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: #000;
+  }
+  
+  &--v::before {
+    width: $lineweight;
+    height: $cellsize;
+  }
+
+  &--h::before {
+    width: $cellsize;
+    height: $lineweight;
+  }
+
+  &--hv::before {
+    width: $cellsize;
+    height: $lineweight;
+    transform: skewY(45deg);
+  }
+
+  &--vh::before {
+    width: $cellsize;
+    height: $lineweight;
+    transform: skewY(-45deg);
   }
 }

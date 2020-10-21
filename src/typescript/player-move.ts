@@ -8,11 +8,9 @@ class PlayerMove {
     this.O = o
   }
 
-  async doOnBoth(func: Function) {
-    return {
-      x: func(this.X),
-      o: func(this.O),
-    }
+  async doOnBoth(func: (player: string) => void) {
+    func(this.X)
+    func(this.O)
   }
 
   whoIs(data: string) {

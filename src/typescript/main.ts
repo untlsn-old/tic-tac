@@ -12,5 +12,4 @@ const bootstrap = async() => {
   scoreButtonsEvents(game)
 }
 
-
 bootstrap()

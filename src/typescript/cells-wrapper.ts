@@ -10,14 +10,15 @@ class CellsWrapper {
     })
   }
 
-  async paintCell(... winPlaces: number[][]){
+  async paintCell(type: string, ... winPlaces: number[][]){
     winPlaces.forEach(([row, column]) => {
-      this.cells[row*3 + column].classList.add('win-cell')
+      console.log(`row -> ${row}, column -> ${column}, type -> ${type}`)
+      this.cells[row*3 + column].classList.add('win-cell', `win-cell--${type}`)
     })
   }
   async unPaintCells() {
-    this.cells.forEach(value => {
-      value.classList.remove('win-cell')
+    this.cells.forEach(cell => {
+      cell.classList.remove('win-cell', 'win-cell--v', 'win-cell--h', 'win-cell--vh', 'win-cell--hv',)
     })
   }
 
@@ -49,3 +50,4 @@ class CellsWrapper {
       this.getCellFromField(third) == playerNMove
   }
 }
+

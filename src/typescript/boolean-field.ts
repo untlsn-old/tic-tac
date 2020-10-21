@@ -10,7 +10,10 @@ class BooleanField {
   get random() {
     return Math.random() >= .5
   }
-  endGame() {
+  async endGame() {
     this.gameRun = false
+  }
+  async changePlayer() {
+    this.isXMove = !this.isXMove
   }
 }

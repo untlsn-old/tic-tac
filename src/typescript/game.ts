@@ -18,12 +18,13 @@ class Game {
     this.addOnClickToCells()
   }
 
+  // @ts-ignore
   private async addOnClickToCells() {
     this.cells.asArray.forEach(cell => {
       cell.onClick(() => {
         if(this.booleanField.gameRun)
-          cell.getSign(this.booleanField.isXMove, this.playerMove.X, this.playerMove.O).then(boolean => {
-            this.booleanField.isXMove = boolean
+          cell.getSign(this.booleanField.isXMove, this.playerMove.X, this.playerMove.O).then(() => {
+            this.booleanField.changePlayer()
             this.checkWinStatus()
           })
       })
@@ -35,42 +36,36 @@ class Game {
   }
 
   private async checkWinStatus() {
-    return await this.checkWinStatusHelp(this.playerMove.X) ||
-    await this.checkWinStatusHelp(this.playerMove.O)
+    this.playerMove.doOnBoth(player => {
+      this.checkWinStatusHelp(player)
+    })
   }
 
   private async checkWinStatusHelp(playerNMove: string) {
     return this.testCellsGenerator(playerNMove, [
-      [[0, 0], [1, 0], [2, 0]],
-      [[0, 1], [1, 1], [2, 1]],
-      [[0, 2], [1, 2], [2, 2]],
-      [[0, 0], [0, 1], [0, 2]],
-      [[1, 0], [1, 1], [1, 2]],
-      [[2, 0], [2, 1], [2, 2]],
-      [[0, 0], [1, 1], [2, 2]],
-      [[0, 2], [1, 1], [2, 0]]
+      [[0, 0], [1, 0], [2, 0], 'v'],
+      [[0, 1], [1, 1], [2, 1], 'v'],
+      [[0, 2], [1, 2], [2, 2], 'v'],
+      [[0, 0], [0, 1], [0, 2], 'h'],
+      [[1, 0], [1, 1], [1, 2], 'h'],
+      [[2, 0], [2, 1], [2, 2], 'h'],
+      [[0, 0], [1, 1], [2, 2], 'hv'],
+      [[0, 2], [1, 1], [2, 0], 'vh']
     ])
   }
-  private async testCellsGenerator(playerNMove: string, generatorArray: number[][][]) {
-    let whoWin = ''
-    generatorArray.forEach(async value => {
-      this.testCells(playerNMove, value).then(value => {
-        whoWin = whoWin
-      })
+  private async testCellsGenerator(playerNMove: string, generatorArray: statusType[]) {
+    generatorArray.forEach(value  => {
+      this.testCells(playerNMove, value)
     })
-    return whoWin
   }
-  private async testCells(playerNMove: string, [first, second, third]: number[][]) {
-    if(
-      this.cells.testCells(playerNMove, first, second, third)   
-    ) {
-      this.cells.paintCell(first, second, third)
+  private async testCells(playerNMove: string, [first, second, third, type]: statusType) {
+    if(this.cells.testCells(playerNMove, first, second, third)) {
+      this.cells.paintCell( type, first, second, third)
       this.booleanField.endGame()
-      const who = this.playerMove.whoIs(playerNMove)
-      this.score.addScoreAndInsert(who)
-      return who
+      this.score.addScoreAndInsert(this.playerMove.whoIs(playerNMove))
     }
   }
   
 }
 
+type statusType = [number[], number[], number[], string]

@@ -14,8 +14,8 @@ class Score {
     this.playerOScore = startScoreX
     this.playerXScore = startScoreO
 
-    this.playerXElement = document.querySelector(`.${scoreXClass}`)
-    this.playerOElement = document.querySelector(`.${scoreOClass}`)
+    this.playerXElement = document.querySelector(`.${scoreXClass}`)!
+    this.playerOElement = document.querySelector(`.${scoreOClass}`)!
   }
 
   async addScoreTo(player: player) {
