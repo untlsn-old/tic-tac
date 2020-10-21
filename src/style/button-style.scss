@@ -1,0 +1,22 @@
+.button-wrapper {
+  margin-top: 35px;
+  display: flex;
+  justify-content: space-evenly;
+  width: 50vw;
+}
+
+.button {
+  font-size: 25px;
+  background-color: transparent;
+  border: 2px solid black;
+  border-radius: 25px;
+  padding: 5px 10px;
+  outline: none;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffffff0d;
+  }
+  &:focus {
+    background-color: #ffffff1a;
+  }
+} 
